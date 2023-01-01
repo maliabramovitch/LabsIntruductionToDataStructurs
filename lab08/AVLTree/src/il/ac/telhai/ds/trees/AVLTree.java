@@ -17,13 +17,21 @@ public class AVLTree<T extends Comparable<T>> {
         this.value = value;
     }
 
+    private void calculateHeight() {
+        height = Math.max(l != null? l.height :-1 , r != null? r.height : -1) +1;
+    }
+
+    private void calculateBalance() {
+        balance = (l != null ? l.height : -1) - (r != null ? r.height : -1);
+    }
+
     //add the value to the tree, and return the updated root of the tree.
     public AVLTree<T> add(T value) {
         if (value.compareTo(this.value) < 0) {
             if (l != null) {
                 l = l.add(value);
                 calculateHeight();
-                balance = l.height - (r != null ? r.height : -1);
+                calculateBalance();
                 if (balance == 2) {
                     if (l.balance == -1) {
                         return lr();
@@ -35,13 +43,13 @@ public class AVLTree<T extends Comparable<T>> {
                 l = new AVLTree<>(value);
                 l.calculateHeight();
                 calculateHeight();
-                balance = l.height - (r != null ? r.height : -1);
+                calculateBalance();
             }
         } else {
             if (r != null) {
                 r = r.add(value);
                 calculateHeight();
-                balance = (l != null ? l.height : -1) - r.height;
+                calculateBalance();
                 if (balance == -2) {
                     if (r.balance == 1) {
                         return rl();
@@ -54,7 +62,7 @@ public class AVLTree<T extends Comparable<T>> {
                 r = new AVLTree<>(value);
                 r.calculateHeight();
                 calculateHeight();
-                balance = (l != null ? l.height : -1) - r.height;
+                calculateBalance();
             }
         }
         return this;
@@ -75,10 +83,6 @@ public class AVLTree<T extends Comparable<T>> {
     //return the right subTree of this node
     public AVLTree<T> getRight() {
         return r;
-    }
-
-    private void calculateHeight() {
-        height = Math.max(l != null? l.height :-1 , r != null? r.height : -1) +1;
     }
     private AVLTree<T> ll() {
         AVLTree<T> tmp = l;
