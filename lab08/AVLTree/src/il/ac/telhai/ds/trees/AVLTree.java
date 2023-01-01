@@ -22,38 +22,42 @@ public class AVLTree<T extends Comparable<T>> {
         if (value.compareTo(this.value) < 0) {
             if (l != null) {
                 l = l.add(value);
-                height = Math.max(l.height, (r != null ? r.height : -1)) + 1;
-                balance = l.height - r.height;
+                calculateHeight();
+                balance = l.height - (r != null ? r.height : -1);
                 if (balance == 2) {
                     if (l.balance == -1) {
-                        lr();
-                        ll();
-                    } else if (l.balance == 1) {
-                        ll();
+                        return lr();
+                    } else if (l.balance == 1 || l.balance == 0) {
+                        return ll();
                     }
                 }
             } else {
                 l = new AVLTree<>(value);
+                l.calculateHeight();
+                calculateHeight();
+                balance = l.height - (r != null ? r.height : -1);
             }
-            return this;
         } else {
             if (r != null) {
                 r = r.add(value);
-                height = Math.max(r.height, (l != null ? l.height : -1)) + 1;
-                balance = l.height - r.height;
+                calculateHeight();
+                balance = (l != null ? l.height : -1) - r.height;
                 if (balance == -2) {
-                    if (l.balance == -1) {
-                        rl();
-                        rr();
-                    } else if (r.balance == -1) {
-                        rr();
+                    if (r.balance == 1) {
+                        return rl();
+                    } else if (r.balance == -1  || r.balance == 0) {
+                        return rr();
                     }
                 }
+
             } else {
                 r = new AVLTree<>(value);
+                r.calculateHeight();
+                calculateHeight();
+                balance = (l != null ? l.height : -1) - r.height;
             }
-            return this;
         }
+        return this;
 
     }
 
@@ -73,31 +77,42 @@ public class AVLTree<T extends Comparable<T>> {
         return r;
     }
 
-    private void ll() {
+    private void calculateHeight() {
+        height = Math.max(l != null? l.height :-1 , r != null? r.height : -1) +1;
+    }
+    private AVLTree<T> ll() {
         AVLTree<T> tmp = l;
         l = tmp.r;
         tmp.r = this;
-        this.value = tmp.value;
-        l = tmp.l;
-        r = tmp.r;
-        --height;
+        tmp.l.calculateHeight();
+        tmp.r.calculateHeight();
+        tmp.calculateHeight();
+        return tmp;
     }
 
-    private void rr() {
+    private AVLTree<T> rr() {
         AVLTree<T> tmp = r;
         r = tmp.l;
         tmp.l = this;
-        this.value = tmp.value;
-        l = tmp.l;
-        r = tmp.r;
-        --height;
+        tmp.l.calculateHeight();
+        tmp.r.calculateHeight();
+        tmp.calculateHeight();
+        return tmp;
     }
 
-    private void lr() {
-
+    private AVLTree<T> lr() {
+        AVLTree<T> tmp = l;
+        l = tmp.r;
+        tmp.r = l.l;
+        l.l = tmp;
+        return ll();
     }
 
-    private void rl() {
-
+    private AVLTree<T> rl() {
+        AVLTree<T> tmp = r;
+        r = tmp.l;
+        tmp.l = r.r;
+        r.r = tmp;
+        return rr();
     }
 }
