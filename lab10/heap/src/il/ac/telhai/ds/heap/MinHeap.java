@@ -24,6 +24,7 @@ public class MinHeap<T extends Comparable<T>> {
             heap[lastElement] = arr[i];
         }
         for (int i = lastElement; i > 0; i--) {
+
             spotify(i);
         }
 
